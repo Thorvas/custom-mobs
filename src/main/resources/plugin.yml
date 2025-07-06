@@ -2,6 +2,11 @@ name: MobHeadPlugin
 main: org.example.Main
 version: 1.0
 api-version: 1.20
+depend:
+  - ProtocolLib
 commands:
-  spawnmob:
-    description: Spawn custom mob
+  wings:
+    description: Gives the player a set of wings.
+    usage: /<command>
+    permission: mobheadplugin.wings
+    permission-message: You do not have permission to use this command.
