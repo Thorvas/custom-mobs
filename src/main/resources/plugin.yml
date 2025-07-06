@@ -1,5 +1,5 @@
 name: MobHeadPlugin
-main: your.package.MobHeadPlugin
+main: org.example.Main
 version: 1.0
 api-version: 1.20
 commands:
