@@ -8,3 +8,6 @@ commands:
   resetspells:
     description: Resetuje wszystkie nauczone czary
     usage: /resetspells
+  spelllevel:
+    description: Dodaje doświadczenie do zaklęcia kosztem XP gracza
+    usage: /spelllevel <spellId> <xpAmount>
