@@ -40,6 +40,7 @@ import org.example.spell.Spell;
 import org.example.spellbook.CooldownManager;
 import org.example.spellbook.SpellManager;
 import org.example.spellbook.Spellbook;
+import org.example.util.ExperienceUtil;
 
 import java.util.List;
 
@@ -107,6 +108,66 @@ public class Main extends JavaPlugin implements Listener {
             Player p = (Player) sender;
             spellManager.resetSpellbookFor(p);
             p.sendMessage("Twoje zaklęcia zostały zresetowane.");
+            return true;
+        });
+
+        getCommand("spelllevel").setExecutor((sender, cmd, label, args) -> {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("Tylko gracze mogą używać tej komendy.");
+                return true;
+            }
+            if (args.length != 2) {
+                sender.sendMessage("Użycie: /spelllevel <spellId> <xpAmount>");
+                return true;
+            }
+
+            Player p = (Player) sender;
+            String spellId = args[0].toUpperCase();
+            int amount;
+            try {
+                amount = Integer.parseInt(args[1]);
+            } catch (NumberFormatException ex) {
+                sender.sendMessage("Drugi argument musi być liczbą XP.");
+                return true;
+            }
+
+            if (amount <= 0) {
+                sender.sendMessage("Ilość XP musi być większa od zera.");
+                return true;
+            }
+
+            int totalXp = ExperienceUtil.getTotalExperience(p);
+            if (totalXp < amount) {
+                sender.sendMessage("Nie masz wystarczającego doświadczenia.");
+                return true;
+            }
+
+            Spellbook book = spellManager.loadSpellbookFor(p);
+            Spell target = null;
+            for (Spell s : book.getKnownSpells()) {
+                if (s.getId().equalsIgnoreCase(spellId)) {
+                    target = s;
+                    break;
+                }
+            }
+
+            if (target == null) {
+                sender.sendMessage("Nieznane zaklęcie o id " + spellId + ".");
+                return true;
+            }
+
+            try {
+                int current = target.getExperience();
+                target.getClass().getMethod("setExperience", int.class)
+                        .invoke(target, current + amount);
+            } catch (Exception e) {
+                sender.sendMessage("Nie można ustawić doświadczenia tego zaklęcia.");
+                return true;
+            }
+
+            ExperienceUtil.setTotalExperience(p, totalXp - amount);
+            spellManager.saveSpellbookFor(p);
+            sender.sendMessage("Dodano " + amount + " XP do zaklęcia " + spellId + ".");
             return true;
         });
     }
