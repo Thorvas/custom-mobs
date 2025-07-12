@@ -1,6 +1,7 @@
 package org.example.calculator;
 
 import net.kyori.adventure.text.Component;
+import org.example.context.SpellContext;
 import org.example.spell.Spell;
 
 import java.util.List;
@@ -13,11 +14,12 @@ public class MetaExecutor {
         this.calculators = calculators;
     }
 
-    public Component calculateMeta(Spell spell) {
+    public Component calculateMeta(SpellContext context) {
+        Spell spell = context.getSpell();
         return calculators.stream()
                 .filter(calculator -> calculator.supports(spell))
                 .findFirst()
-                .map(calculator -> calculator.getMeta(spell))
+                .map(calculator -> calculator.getMeta(context))
                 .orElse(Component.empty());
     }
 }

@@ -1,8 +1,8 @@
 package org.example.calculator;
 
-import org.example.spell.Spell;
+import org.example.context.SpellContext;
 
 public interface IRangeCalculator {
 
-    double calculateRange(Spell spell);
+    double calculateRange(SpellContext context);
 }

@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.example.calculator.IMetaCalculator;
+import org.example.context.SpellContext;
 import org.example.spell.Spell;
 import org.example.spell.meteor.MeteorSpell;
 
@@ -16,8 +17,8 @@ public class MeteorMetaCalculator implements IMetaCalculator {
     }
 
     @Override
-    public Component getMeta(Spell spell) {
-        MeteorSpell meteorSpell = (MeteorSpell) spell;
+    public Component getMeta(SpellContext context) {
+        MeteorSpell meteorSpell = (MeteorSpell) context.getSpell();
 
         return Component.text("\n> Szczegółowe informacje o zaklęciu <", NamedTextColor.GRAY)
                 .hoverEvent(HoverEvent.showText(
