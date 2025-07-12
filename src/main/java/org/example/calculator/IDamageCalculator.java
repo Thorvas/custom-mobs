@@ -1,7 +1,7 @@
 package org.example.calculator;
 
-import org.example.spell.Spell;
+import org.example.context.SpellContext;
 
 public interface IDamageCalculator {
-    double calculateDamage(Spell spell);
+    double calculateDamage(SpellContext context);
 }

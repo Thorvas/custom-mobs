@@ -1,6 +1,7 @@
 package org.example.calculator.fireball;
 
 import org.example.calculator.ICalculateManager;
+import org.example.context.SpellContext;
 import org.example.spell.Spell;
 import org.example.spell.frostbolt.FireballSpell;
 
@@ -18,16 +19,16 @@ public class FireballCalculateManager implements ICalculateManager {
         this.fireballRangeCalculator = fireballRangeCalculator;
     }
 
-    public double calculateDamage(Spell spell) {
-        return fireballDamageCalculator.calculateDamage(spell);
+    public double calculateDamage(SpellContext context) {
+        return fireballDamageCalculator.calculateDamage(context);
     }
 
-    public double calculateKnockback(Spell spell, double distance) {
-        return fireballKnockbackCalculator.calculateKnockback(spell, distance);
+    public double calculateKnockback(SpellContext context, double distance) {
+        return fireballKnockbackCalculator.calculateKnockback(context, distance);
     }
 
-    public double calculateRange(Spell spell) {
-        return fireballRangeCalculator.calculateRange(spell);
+    public double calculateRange(SpellContext context) {
+        return fireballRangeCalculator.calculateRange(context);
     }
 
     @Override

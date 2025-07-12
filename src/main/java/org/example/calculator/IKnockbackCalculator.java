@@ -1,8 +1,8 @@
 package org.example.calculator;
 
-import org.example.spell.Spell;
+import org.example.context.SpellContext;
 
 public interface IKnockbackCalculator {
 
-    double calculateKnockback(Spell spell, double distance);
+    double calculateKnockback(SpellContext context, double distance);
 }
