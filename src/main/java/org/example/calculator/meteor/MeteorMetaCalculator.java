@@ -5,6 +5,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.example.calculator.IMetaCalculator;
 import org.example.context.SpellContext;
+import org.example.context.SpellContextAttributes;
 import org.example.spell.Spell;
 import org.example.spell.meteor.MeteorSpell;
 
@@ -18,12 +19,12 @@ public class MeteorMetaCalculator implements IMetaCalculator {
 
     @Override
     public Component getMeta(SpellContext context) {
-        MeteorSpell meteorSpell = (MeteorSpell) context.getSpell();
+        Double radius = context.getAttr(SpellContextAttributes.EXPLOSION_RADIUS);
 
         return Component.text("\n> Szczegółowe informacje o zaklęciu <", NamedTextColor.GRAY)
                 .hoverEvent(HoverEvent.showText(
                         Component.text("[Szczegółowe informacje parametrów zaklęcia]\n", NamedTextColor.GOLD)
-                                .append(Component.text("- Zasięg eksplozji: ", NamedTextColor.GRAY ).append(Component.text( meteorSpell.getEXPLOSION_RADIUS() + " bloków\n", NamedTextColor.RED))
+                                .append(Component.text("- Zasięg eksplozji: ", NamedTextColor.GRAY ).append(Component.text( radius + " bloków\n", NamedTextColor.RED))
                 )));
     }
 
