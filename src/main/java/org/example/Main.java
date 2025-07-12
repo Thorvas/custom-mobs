@@ -2,55 +2,147 @@
 package org.example;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.example.handler.ApplyDamageHandlerCasting;
-import org.example.handler.ApplyKnockbackHandlerCasting;
+import org.example.calculator.IMetaCalculator;
+import org.example.calculator.MetaExecutor;
+import org.example.calculator.fireball.*;
+import org.example.calculator.meteor.MeteorCalculateManager;
+import org.example.calculator.meteor.MeteorDamageCalculator;
+import org.example.calculator.meteor.MeteorKnockbackCalculator;
+import org.example.calculator.meteor.MeteorMetaCalculator;
+import org.example.factory.SpellDescriptionFactory;
+import org.example.handler.CheckCooldownStatusHandler;
 import org.example.handler.CheckStunnedStatusHandler;
 import org.example.handler.PipelineExecutor;
+import org.example.handler.VisualPipelineExecutor;
+import org.example.handler.fireball.FireballApplyDamageHandlerCasting;
+import org.example.handler.fireball.FireballApplyKnockbackHandlerCasting;
+import org.example.handler.fireball.FireballVisualInitialCastHandler;
+import org.example.handler.fireball.FireballVisualLaunchHandler;
+import org.example.handler.meteor.MeteorApplyDamageHandlerCasting;
+import org.example.handler.meteor.MeteorApplyKnockbackHandlerCasting;
+import org.example.handler.meteor.MeteorVisualInitialCastHandler;
+import org.example.handler.meteor.MeteorVisualLaunchMeteorHandler;
+import org.example.listener.ScrollSwitchSpellListener;
+import org.example.spell.Spell;
+import org.example.spellbook.CooldownManager;
+import org.example.spellbook.SpellManager;
 import org.example.spellbook.Spellbook;
 
 import java.util.List;
-import java.util.Random;
 
 public class Main extends JavaPlugin implements Listener {
 
-    private final Random random = new Random();
-    private Spellbook spellbook;
+    private SpellManager spellManager;
+    private SpellDescriptionFactory spellDescriptionFactory;
 
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
-        this.spellbook = new Spellbook(new PipelineExecutor(
-                List.of(new CheckStunnedStatusHandler()),
-                List.of(new ApplyDamageHandlerCasting(),
-                        new ApplyKnockbackHandlerCasting())
-        ), this);
+
+        FireballDamageCalculator fireballDamageCalculator = new FireballDamageCalculator();
+        FireballKnockbackCalculator fireballKnockbackCalculator = new FireballKnockbackCalculator();
+        FireballRangeCalculator fireballRangeCalculator = new FireballRangeCalculator();
+        FireballCalculateManager fireballCalculateManager = new FireballCalculateManager(
+                fireballDamageCalculator, fireballKnockbackCalculator, fireballRangeCalculator
+        );
+
+        MeteorDamageCalculator meteorDamageCalculator = new MeteorDamageCalculator();
+        MeteorKnockbackCalculator meteorKnockbackCalculator = new MeteorKnockbackCalculator();
+        MeteorCalculateManager meteorCalculateManager = new MeteorCalculateManager(
+                meteorDamageCalculator, meteorKnockbackCalculator
+        );
+
+        List<IMetaCalculator> metaCalculators = List.of(
+                new FireballMetaCalculator(fireballCalculateManager),
+                new MeteorMetaCalculator(meteorCalculateManager)
+        );
+        MetaExecutor metaExecutor = new MetaExecutor(metaCalculators);
+        this.spellDescriptionFactory = new SpellDescriptionFactory(metaExecutor);
+
+        // 1) Inicjalizujesz SpellManager
+        this.spellManager = new SpellManager(
+                new PipelineExecutor(
+                        List.of(new CheckCooldownStatusHandler(new CooldownManager()),
+                                new CheckStunnedStatusHandler()),
+                        List.of(new MeteorApplyDamageHandlerCasting(),
+                                new MeteorApplyKnockbackHandlerCasting(),
+                                new FireballApplyKnockbackHandlerCasting(),
+                                new FireballApplyDamageHandlerCasting())
+                ),
+                new VisualPipelineExecutor(
+                        List.of(new MeteorVisualInitialCastHandler(),
+                                new MeteorVisualLaunchMeteorHandler(),
+                                new FireballVisualInitialCastHandler(),
+                                new FireballVisualLaunchHandler())
+                ),
+                this
+        );
+
+        // 2) Ładujesz wszystkich online graczy
+        spellManager.loadAllOnline();
+        getServer().getPluginManager().registerEvents(
+                new ScrollSwitchSpellListener(spellManager),
+                this
+        );
+
+        getCommand("resetspells").setExecutor((sender, cmd, label, args) -> {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("Tylko gracze mogą resetować czary.");
+                return true;
+            }
+            Player p = (Player) sender;
+            spellManager.resetSpellbookFor(p);
+            p.sendMessage("Twoje zaklęcia zostały zresetowane.");
+            return true;
+        });
+    }
+
+    @Override
+    public void onDisable() {
+        // zapisujesz stan przed wyłączeniem
+        spellManager.saveAllOnline();
+    }
+
+    // --- listenerzy do join/quit ---
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent e) {
+        spellManager.loadSpellbookFor(e.getPlayer());
     }
 
     @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        spellManager.saveSpellbookFor(e.getPlayer());
+    }
+
+    // ... Twoje onBookRightClick i onPlayerRightClick ...
+
+    // zamiast bezpośredniego tworzenia MeteorSpell robisz:
+    @EventHandler
     public void onBookRightClick(PlayerInteractEvent event) {
-        Action action = event.getAction();
-        if (action != Action.RIGHT_CLICK_BLOCK && action != Action.RIGHT_CLICK_AIR) return;
-        Player player = event.getPlayer();
+        if (event.getAction() != Action.RIGHT_CLICK_AIR
+                && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (!event.getPlayer().isSneaking()) return;
+        ItemStack off = event.getPlayer().getInventory().getItemInOffHand();
+        if (off == null || off.getType() != Material.BOOK ||
+                off.getItemMeta() == null ||
+                !off.getItemMeta().hasItemName() ||
+                !off.getItemMeta().itemName().equals(Component.text("Ksiega zaklec"))) return;
 
-        if (!player.isSneaking()) return;
-
-        ItemStack offHand = player.getInventory().getItemInOffHand();
-        if (offHand == null || offHand.getType() != Material.BOOK) return;
-
-        spellbook.castSpell(player);
+        // !! tutaj używasz SpellManager, nie tworysz nowej instancji ręcznie:
+        spellManager.castSpell(event.getPlayer());
     }
 
     @EventHandler
@@ -62,66 +154,35 @@ public class Main extends JavaPlugin implements Listener {
         ItemStack item = player.getInventory().getItemInMainHand();
 
         // Sprawdź czy gracz trzyma książkę
-        if (item.getType() != Material.BOOK &&
-                item.getType() != Material.WRITTEN_BOOK &&
-                item.getType() != Material.WRITABLE_BOOK) return;
+        if (item.getType() != Material.BOOK ||
+                item.getItemMeta() == null ||
+                !item.getItemMeta().hasItemName() ||
+                !item.getItemMeta().itemName().equals(Component.text("Ksiega zaklec"))) return;
 
         // Anuluj domyślne działanie (np. otwieranie książki)
         event.setCancelled(true);
 
         // Otwórz księgę zaklęć
-        openSpellbook(player);
+        openSpellbook(player, spellDescriptionFactory);
     }
 
-    /**
-     * Otwiera księgę zaklęć dla gracza używając ProtocolLib
-     */
-    private void openSpellbook(Player player) {
-        try {
-            // Stwórz książkę z zawartością
-            ItemStack book = createSpellbook();
+    private void openSpellbook(Player player, SpellDescriptionFactory spellDescriptionFactory) {
+        // pobierz Spellbook gracza
+        Spellbook book = spellManager.loadSpellbookFor(player);
 
-            player.openBook(book);
-
-        } catch (Exception e) {
-            getLogger().severe("Błąd podczas otwierania księgi zaklęć: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Tworzy księgę z zawartością zaklęć
-     */
-    private ItemStack createSpellbook() {
+        // teraz budujesz ItemStack z zawartością według book.getKnownSpells()
         BookMeta meta = (BookMeta) new ItemStack(Material.WRITTEN_BOOK).getItemMeta();
-        meta.title(Component.text("Księga Zaklęć", NamedTextColor.GOLD, TextDecoration.BOLD));
+        meta.title(Component.text("Księga Zaklęć", NamedTextColor.GOLD));
         meta.author(Component.text("Mag Arcanum", NamedTextColor.LIGHT_PURPLE));
 
-        Component meteorPage = Component.text("================\n", NamedTextColor.DARK_RED, TextDecoration.BOLD)
-                .append(Component.text("⚡ METEOR ⚡\n", NamedTextColor.DARK_RED, TextDecoration.BOLD))
-                .append(Component.text("================\n\n", NamedTextColor.DARK_GREEN))
-                .append(Component.text("Na wskazany obszar zostaje \n", NamedTextColor.DARK_GRAY))
-                .append(Component.text("przywołany płonący meteoryt.\n\n", NamedTextColor.DARK_GRAY))
-                .append(Component.text("Obrażenia: ", NamedTextColor.DARK_RED)).append(Component.text("10 HP.\n\n", NamedTextColor.RED))
-                .append(Component.text("» Ustaw jako czar domyślny", NamedTextColor.GOLD)
-                        .clickEvent(ClickEvent.runCommand("/setdefault meteor"))
-                        .hoverEvent(HoverEvent.showText(Component.text("Kliknij, aby ustawić domyślny czar", NamedTextColor.YELLOW)))
-                );
-
-        Component healPage = Component.text("================\n", NamedTextColor.DARK_RED, TextDecoration.BOLD)
-                .append(Component.text("⚡ PRZEMIANA: LIS ⚡\n", NamedTextColor.DARK_RED, TextDecoration.BOLD))
-                .append(Component.text("================\n\n", NamedTextColor.DARK_GREEN))
-                .append(Component.text("Przemienia rzucającego \n", NamedTextColor.DARK_GRAY))
-                .append(Component.text("w lisa.\n\n", NamedTextColor.DARK_GRAY))
-                .append(Component.text("» Ustaw jako czar domyślny", NamedTextColor.GOLD)
-                        .clickEvent(ClickEvent.runCommand("/setdefault meteor"))
-                        .hoverEvent(HoverEvent.showText(Component.text("Kliknij, aby ustawić domyślny czar", NamedTextColor.YELLOW)))
-                );
-
-        meta.addPages(meteorPage, healPage /* kolejne */);
-        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
-        book.setItemMeta(meta);
-        return book;
+        // dla każdego znanego spella tworzysz stronę
+        for (Spell s : book.getKnownSpells()) {
+            Component page = spellDescriptionFactory.createSpellDescription(s);
+            meta.addPages(page);
+        }
+        ItemStack display = new ItemStack(Material.WRITTEN_BOOK);
+        display.setItemMeta(meta);
+        player.openBook(display);
     }
-
 }
+

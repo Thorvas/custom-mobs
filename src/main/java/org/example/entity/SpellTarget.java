@@ -1,6 +1,8 @@
 package org.example.entity;
 
 import org.bukkit.entity.LivingEntity;
+import org.example.entity.status.NegativeEntityStatus;
+import org.example.entity.status.PositiveEntityStatus;
 
 import java.util.List;
 

@@ -17,18 +17,16 @@ public class PipelineExecutor {
     private final List<PreCastPipelineHandler> preCastPipelineHandlers;
 
     public boolean handlePreCast(PreCastSpellContext context) {
-        for (PreCastPipelineHandler handler : preCastPipelineHandlers) {
-            if (handler.execute(context)) {
-                return false; // If any handler returns true, stop the pre-cast phase
-            }
-        }
-        return true;
+
+         return preCastPipelineHandlers.stream()
+                .filter(handler -> handler.supports(context.getSpell()))
+                .noneMatch(handler -> handler.execute(context));
     }
 
     public void handleCasting(SpellContext context) {
-        // Logic for handling casting phase
-        castingPipelineHandlers.forEach(handler -> {
-            handler.execute(context);
-        });
+
+        castingPipelineHandlers.stream()
+                .filter(handler -> handler.supports(context.getSpell()))
+                .forEach(handler -> handler.execute(context));
     }
 }

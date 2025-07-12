@@ -1,21 +1,26 @@
 package org.example.context;
 
-import org.bukkit.Location;
 import org.example.entity.SpellCaster;
 import org.example.entity.SpellTarget;
 import org.example.spell.Spell;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SpellContext {
 
     private final Spell spell;
     private final SpellTarget target;
-    private final Location hitLocation;
-    private final double knockbackStrength;
+    private Map<SpellContextAttributes, Object> metadata = new HashMap<>();
     private final double damage;
     private final SpellCaster caster;
 
-    public Location getHitLocation() {
-        return hitLocation;
+    public <T> void addAttribute(SpellContextAttributes key, T value) {
+        metadata.put(key, value);
+    }
+
+    public <T> T getAttr(SpellContextAttributes key) {
+        return metadata.get(key) != null ? (T) metadata.get(key) : null;
     }
 
     public double getDamage() {
@@ -34,16 +39,10 @@ public class SpellContext {
         return caster;
     }
 
-    public double getKnockbackStrength() {
-        return knockbackStrength;
-    }
-
-    public SpellContext(Spell spell, SpellTarget target, SpellCaster caster, Location hitLocation, double damage, double knockbackStrength) {
+    public SpellContext(Spell spell, SpellTarget target, SpellCaster caster, double damage) {
         this.spell = spell;
         this.target = target;
         this.caster = caster;
-        this.hitLocation = hitLocation;
         this.damage = damage;
-        this.knockbackStrength = knockbackStrength;
     }
 }
