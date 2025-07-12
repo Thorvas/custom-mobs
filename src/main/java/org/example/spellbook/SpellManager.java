@@ -16,6 +16,7 @@ import org.example.handler.VisualPipelineExecutor;
 import org.example.spell.frostbolt.FireballSpell;
 import org.example.spell.meteor.MeteorSpell;
 import org.example.spell.Spell;
+import java.util.function.Supplier;
 
 import java.util.*;
 
@@ -32,16 +33,17 @@ public class SpellManager {
         this.visualPipelineExecutor = visualPipelineExecutor;
     }
 
-    private static final List<Spell> allSpells = List.of(
-            new MeteorSpell(),
-            new FireballSpell()
+    private static final Map<String, Supplier<Spell>> allSpells = Map.of(
+            "METEOR", MeteorSpell::new,
+            "FIREBALL", FireballSpell::new
     );
 
     public static Spell getById(String id) {
-        return allSpells.stream()
-                .filter(spell -> spell.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Spell with id " + id + " not found"));
+        Supplier<Spell> supplier = allSpells.get(id);
+        if (supplier == null) {
+            throw new IllegalArgumentException("Spell with id " + id + " not found");
+        }
+        return supplier.get();
     }
 
     public Spellbook loadSpellbookFor(LivingEntity caster) {
