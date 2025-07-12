@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.example.calculator.IMetaCalculator;
+import org.example.context.SpellContext;
 import org.example.spell.Spell;
 import org.example.spell.frostbolt.FireballSpell;
 
@@ -16,16 +17,16 @@ public class FireballMetaCalculator implements IMetaCalculator {
     private final FireballCalculateManager fireballCalculateManager;
 
     @Override
-    public Component getMeta(Spell spell) {
+    public Component getMeta(SpellContext context) {
 
-        FireballSpell fireballSpell = (FireballSpell) spell;
+        FireballSpell fireballSpell = (FireballSpell) context.getSpell();
 
         return Component.text("\n> Szczegółowe informacje o zaklęciu <", NamedTextColor.GRAY)
                 .hoverEvent(HoverEvent.showText(
                         Component.text("[Szczegółowe informacje parametrów zaklęcia]\n", NamedTextColor.GOLD)
                                 .append(Component.text("- Zasięg eksplozji: ", NamedTextColor.GRAY ).append(Component.text( fireballSpell.getExplosionRadius() + " bloków\n", NamedTextColor.RED))
-                                .append(Component.text("- Obrażenia: ", NamedTextColor.GRAY).append(Component.text(fireballCalculateManager.calculateDamage(fireballSpell) / 2.0 + " ❤\n", NamedTextColor.RED))
-                                        .append(Component.text("- Zasięg rzucenia zaklęcia: ", NamedTextColor.GRAY).append(Component.text(fireballCalculateManager.calculateRange(fireballSpell) + " bloków\n", NamedTextColor.RED))
+                                .append(Component.text("- Obrażenia: ", NamedTextColor.GRAY).append(Component.text(fireballCalculateManager.calculateDamage(context) / 2.0 + " ❤\n", NamedTextColor.RED))
+                                        .append(Component.text("- Zasięg rzucenia zaklęcia: ", NamedTextColor.GRAY).append(Component.text(fireballCalculateManager.calculateRange(context) + " bloków\n", NamedTextColor.RED))
                                 )))));
     }
 
