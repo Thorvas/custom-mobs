@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.example.calculator.IMetaCalculator;
+import org.example.calculator.MetaContextResolver;
 import org.example.calculator.MetaExecutor;
 import org.example.calculator.fireball.*;
 import org.example.calculator.meteor.MeteorCalculateManager;
@@ -51,6 +52,7 @@ public class Main extends JavaPlugin implements Listener {
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
 
+        MetaContextResolver metaContextResolver = new MetaContextResolver();
         FireballDamageCalculator fireballDamageCalculator = new FireballDamageCalculator();
         FireballKnockbackCalculator fireballKnockbackCalculator = new FireballKnockbackCalculator();
         FireballRangeCalculator fireballRangeCalculator = new FireballRangeCalculator();
@@ -69,7 +71,7 @@ public class Main extends JavaPlugin implements Listener {
                 new MeteorMetaCalculator(meteorCalculateManager)
         );
         MetaExecutor metaExecutor = new MetaExecutor(metaCalculators);
-        this.spellDescriptionFactory = new SpellDescriptionFactory(metaExecutor);
+        this.spellDescriptionFactory = new SpellDescriptionFactory(metaExecutor, metaContextResolver);
 
         // 1) Inicjalizujesz SpellManager
         this.spellManager = new SpellManager(
