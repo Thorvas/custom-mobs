@@ -2,6 +2,7 @@ package org.example.spellbook;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Method;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -25,6 +26,11 @@ public class Spellbook {
 
     private List<Spell> knownSpells = new ArrayList<>();
     private int spellIndex = 0;
+
+    private static class SpellInfo {
+        String id;
+        int exp;
+    }
 
     public Spellbook(JavaPlugin plugin) {
         this.spellsKey = new NamespacedKey(plugin, SPELLS_KEY);
@@ -57,21 +63,28 @@ public class Spellbook {
         return knownSpells.get(spellIndex);
     }
 
-    /** Wczytuje z PDC listę znanych zaklęć i wybrany index */
+    /** Wczytuje z PDC listę znanych zaklęć wraz z poziomem i wybrany index */
     public void loadFromPDC(Player p) {
 
         PersistentDataContainer c = p.getPersistentDataContainer();
 
         String json = c.get(spellsKey, PersistentDataType.STRING);
         if (json != null) {
-            // odczytujemy listę ID i mapujemy na Spell
-            List<String> ids = gson.fromJson(
-                    json, new TypeToken<List<String>>(){}.getType()
+            List<SpellInfo> infos = gson.fromJson(
+                    json, new TypeToken<List<SpellInfo>>(){}.getType()
             );
             knownSpells.clear();
-            for (String id : ids) {
-                Spell s = SpellManager.getById(id);
-                if (s != null) knownSpells.add(s);
+            for (SpellInfo info : infos) {
+                Spell s = SpellManager.getById(info.id);
+                if (s != null) {
+                    try {
+                        Method m = s.getClass().getMethod("setExperience", int.class);
+                        m.invoke(s, info.exp);
+                    } catch (Exception ignored) {
+                        // spell has no experience setter
+                    }
+                    knownSpells.add(s);
+                }
             }
         }
 
@@ -83,14 +96,18 @@ public class Spellbook {
         }
     }
 
-    /** Zapisuje do PDC listę ID znanych zaklęć i wybrany index */
+    /** Zapisuje do PDC listę znanych zaklęć wraz z poziomem i wybrany index */
     public void saveToPDC(Player p) {
         PersistentDataContainer c = p.getPersistentDataContainer();
 
-        // serializujemy tylko ID
-        List<String> ids = new ArrayList<>();
-        for (Spell s : knownSpells) ids.add(s.getId());
-        c.set(spellsKey, PersistentDataType.STRING, gson.toJson(ids));
+        List<SpellInfo> infos = new ArrayList<>();
+        for (Spell s : knownSpells) {
+            SpellInfo info = new SpellInfo();
+            info.id = s.getId();
+            info.exp = s.getExperience();
+            infos.add(info);
+        }
+        c.set(spellsKey, PersistentDataType.STRING, gson.toJson(infos));
 
         c.set(selectKey, PersistentDataType.INTEGER, spellIndex);
     }
