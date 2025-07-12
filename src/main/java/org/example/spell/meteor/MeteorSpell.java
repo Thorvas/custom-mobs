@@ -7,8 +7,9 @@ import org.bukkit.entity.Player;
 import org.example.context.DamageType;
 import org.example.spell.AreaSpell;
 import org.example.spell.InterruptibleSpell;
+import org.example.spell.UpgradeableSpell;
 
-public class MeteorSpell implements AreaSpell, InterruptibleSpell {
+public class MeteorSpell implements AreaSpell, InterruptibleSpell, UpgradeableSpell {
 
     private int experience = 5;
     private Component title;

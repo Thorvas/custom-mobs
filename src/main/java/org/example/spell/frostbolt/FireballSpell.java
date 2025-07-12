@@ -7,8 +7,9 @@ import org.bukkit.entity.Player;
 import org.example.context.DamageType;
 import org.example.spell.AreaSpell;
 import org.example.spell.InterruptibleSpell;
+import org.example.spell.UpgradeableSpell;
 
-public class FireballSpell implements AreaSpell, InterruptibleSpell {
+public class FireballSpell implements AreaSpell, InterruptibleSpell, UpgradeableSpell {
 
     // Parametry lotu fireballa
     double speed = 5.0;    // bloki na tick

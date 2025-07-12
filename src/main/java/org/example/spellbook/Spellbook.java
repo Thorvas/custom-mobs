@@ -2,7 +2,6 @@ package org.example.spellbook;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Method;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -77,11 +76,8 @@ public class Spellbook {
             for (SpellInfo info : infos) {
                 Spell s = SpellManager.getById(info.id);
                 if (s != null) {
-                    try {
-                        Method m = s.getClass().getMethod("setExperience", int.class);
-                        m.invoke(s, info.exp);
-                    } catch (Exception ignored) {
-                        // spell has no experience setter
+                    if (s instanceof org.example.spell.UpgradeableSpell up) {
+                        up.setExperience(info.exp);
                     }
                     knownSpells.add(s);
                 }

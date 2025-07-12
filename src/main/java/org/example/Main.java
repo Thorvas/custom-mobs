@@ -156,11 +156,9 @@ public class Main extends JavaPlugin implements Listener {
                 return true;
             }
 
-            try {
-                int current = target.getExperience();
-                target.getClass().getMethod("setExperience", int.class)
-                        .invoke(target, current + amount);
-            } catch (Exception e) {
+            if (target instanceof org.example.spell.UpgradeableSpell up) {
+                up.addExperience(amount);
+            } else {
                 sender.sendMessage("Nie można ustawić doświadczenia tego zaklęcia.");
                 return true;
             }
