@@ -6,8 +6,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.example.spell.frostbolt.FireballSpell;
-import org.example.spell.meteor.MeteorSpell;
 import org.example.spell.Spell;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -35,8 +33,9 @@ public class Spellbook {
         this.spellsKey = new NamespacedKey(plugin, SPELLS_KEY);
         this.selectKey = new NamespacedKey(plugin, SELECT_KEY);
 
-        knownSpells.add(new MeteorSpell());
-        knownSpells.add(new FireballSpell());
+        // Populate default spells using the same factory mechanism
+        knownSpells.add(SpellManager.getById("METEOR"));
+        knownSpells.add(SpellManager.getById("FIREBALL"));
     }
 
     public int getSpellIndex() {
