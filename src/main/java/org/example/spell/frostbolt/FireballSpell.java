@@ -77,7 +77,7 @@ public class FireballSpell implements AreaSpell, InterruptibleSpell, Upgradeable
 
     @Override
     public Long getCooldown() {
-        return 3L;
+        return 3_000L;
     }
 
     @Override

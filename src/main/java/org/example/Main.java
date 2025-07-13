@@ -82,7 +82,7 @@ public class Main extends JavaPlugin implements Listener {
                         List.of(new MeteorApplyDamageHandlerCasting(),
                                 new MeteorApplyKnockbackHandlerCasting(),
                                 new FireballApplyKnockbackHandlerCasting(),
-                                new FireballApplyDamageHandlerCasting())
+                                new FireballApplyDamageHandlerCasting(fireballDamageCalculator))
                 ),
                 new VisualPipelineExecutor(
                         List.of(new MeteorVisualInitialCastHandler(),
