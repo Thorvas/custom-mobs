@@ -40,7 +40,7 @@ public class MeteorSpell implements AreaSpell, InterruptibleSpell, UpgradeableSp
 
     @Override
     public Long getCooldown() {
-        return 3L;
+        return 10L;
     }
 
     public void setTitle(Component title) {
