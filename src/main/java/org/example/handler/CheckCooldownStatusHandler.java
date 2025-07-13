@@ -35,7 +35,7 @@ public class CheckCooldownStatusHandler implements PreCastPipelineHandler {
         Player player = (Player) context.getCaster().getCaster();
         cooldownManager.startCooldown(pid, context.getSpell().getCooldown());
         ItemStack offHand = player.getInventory().getItemInOffHand();
-        player.setCooldown(offHand, (int) COOLDOWN_MS / 50); // Bukkit cooldown in ticks (20 ticks = 1 second)
+        player.setCooldown(offHand, context.getSpell().getCooldown().intValue() / 50); // Bukkit cooldown in ticks (20 ticks = 1 second)
         return false;
     }
 
