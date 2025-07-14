@@ -72,7 +72,6 @@ public class Main extends JavaPlugin implements Listener {
                 new MeteorMetaCalculator(meteorCalculateManager)
         );
         MetaExecutor metaExecutor = new MetaExecutor(metaCalculators);
-        this.spellDescriptionFactory = new SpellDescriptionFactory(metaExecutor, metaContextResolver);
 
         // 1) Inicjalizujesz SpellManager
         this.spellManager = new SpellManager(
@@ -92,6 +91,8 @@ public class Main extends JavaPlugin implements Listener {
                 ),
                 this
         );
+
+        this.spellDescriptionFactory = new SpellDescriptionFactory(metaExecutor, metaContextResolver, spellManager);
 
         // 2) Ładujesz wszystkich online graczy
         spellManager.loadAllOnline();
@@ -169,7 +170,7 @@ public class Main extends JavaPlugin implements Listener {
 
             ExperienceUtil.setTotalExperience(p, totalXp - amount);
             spellManager.saveSpellbookFor(p);
-            sender.sendMessage("Dodano " + amount + " XP do zaklęcia " + spellId +
+            sender.sendMessage("Dodano " + amount + " XP do zaklęcia " + target.getName() +
                     ". Poziom: " + level + " (do następnego potrzeba " + remaining + " XP).");
             return true;
         });
@@ -243,7 +244,7 @@ public class Main extends JavaPlugin implements Listener {
 
         // dla każdego znanego spella tworzysz stronę
         for (Spell s : book.getKnownSpells()) {
-            Component page = spellDescriptionFactory.createSpellDescription(s);
+            Component page = spellDescriptionFactory.createSpellDescription(s, player);
             meta.addPages(page);
         }
         ItemStack display = new ItemStack(Material.WRITTEN_BOOK);

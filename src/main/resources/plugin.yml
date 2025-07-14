@@ -1,13 +1,8 @@
-name: MobHeadPlugin
+name: vSpells
 main: org.example.Main
 version: 1.0
 api-version: 1.20
-depend:
-  - packetevents
 commands:
   resetspells:
     description: Resetuje wszystkie nauczone czary
     usage: /resetspells
-  spelllevel:
-    description: Dodaje doświadczenie do zaklęcia kosztem XP gracza
-    usage: /spelllevel <spellId> <xpAmount>
