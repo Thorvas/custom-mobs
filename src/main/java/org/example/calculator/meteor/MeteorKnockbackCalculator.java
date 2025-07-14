@@ -9,6 +9,6 @@ public class MeteorKnockbackCalculator implements IKnockbackCalculator {
     public double calculateKnockback(SpellContext context, double distance) {
         MeteorSpell meteorSpell = (MeteorSpell) context.getSpell();
 
-        return Math.max(0.2, 1.0 - (distance / meteorSpell.getEXPLOSION_RADIUS()));
+        return Math.max(0.2, 1.0 - (distance / meteorSpell.getExplosionRadius()));
     }
 }

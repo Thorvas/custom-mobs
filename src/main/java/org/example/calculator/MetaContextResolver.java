@@ -23,7 +23,7 @@ public class MetaContextResolver {
             .filter(MeteorSpell.class::isInstance)
             .map(MeteorSpell.class::cast)
             .ifPresent(ms -> {
-                context.addAttribute(SpellContextAttributes.EXPLOSION_RADIUS, ms.getEXPLOSION_RADIUS());
+                context.addAttribute(SpellContextAttributes.EXPLOSION_RADIUS, ms.getExplosionRadius());
                 context.addAttribute(SpellContextAttributes.MAX_RANGE, ms.getMaxDistance());
             });
     }

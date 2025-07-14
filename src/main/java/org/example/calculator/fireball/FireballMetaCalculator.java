@@ -32,8 +32,9 @@ public class FireballMetaCalculator implements IMetaCalculator {
                                 .append(Component.text("- Zasięg eksplozji: ", NamedTextColor.GRAY ).append(Component.text( radius + " bloków\n", NamedTextColor.RED))
                                 .append(Component.text("- Obrażenia: ", NamedTextColor.GRAY).append(Component.text(String.format("%.2f", fireballCalculateManager.calculateDamage(context) / 2.0) + " ❤\n", NamedTextColor.RED))
                                         .append(Component.text("- Poziom zaklęcia: ", NamedTextColor.GRAY).append(Component.text("[" + fireballSpell.getLevel() + "]\n", NamedTextColor.GREEN))
+                                                .append(Component.text("- Czas odnowienia księgi: ", NamedTextColor.GRAY).append(Component.text( fireballSpell.getCooldown() / 1000 + " sekund(y)\n", NamedTextColor.RED))
                                         .append(Component.text("- Zasięg rzucenia zaklęcia: ", NamedTextColor.GRAY).append(Component.text(range + " bloków\n", NamedTextColor.RED))
-                                ))))));
+                                )))))));
     }
 
     @Override

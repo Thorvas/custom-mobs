@@ -14,12 +14,12 @@ public class MeteorSpell implements AreaSpell, InterruptibleSpell, UpgradeableSp
     private int experience = 7;
     private Component title;
     private final String id = "METEOR";
-    private double START_HEIGHT = 50.0;      // ile bloków nad miejscem kliknięcia wyjdzie meteor
-    private double FALL_SPEED = 2.5;         // bloki na tick
-    private double EXPLOSION_RADIUS = 5.0;   // zasięg obrażeń meteoru
-    private float EXPLOSION_POWER = 0f;      // siła wybuchu (0 = brak zniszczeń)
-    private double METEOR_BASE_DAMAGE = 10.0; // obrażenia meteoru
-    private int GROUND_FLAME_COUNT = 20;     // ilość płomieni pozostawionych po wybuchu
+    private double startHeight = 50.0;      // ile bloków nad miejscem kliknięcia wyjdzie meteor
+    private double fallSpeed = 2.5;         // bloki na tick
+    private double explosionRadius = 5.0;   // zasięg obrażeń meteoru
+    private float explosionPower = 0f;      // siła wybuchu (0 = brak zniszczeń)
+    private double meteorBaseDamage = 10.0; // obrażenia meteoru
+    private int groundFlameCount = 20;     // ilość płomieni pozostawionych po wybuchu
     private double maxDistance = 20.0;
 
     public double getMaxDistance() {
@@ -47,52 +47,52 @@ public class MeteorSpell implements AreaSpell, InterruptibleSpell, UpgradeableSp
         this.title = title;
     }
 
-    public double getSTART_HEIGHT() {
-        return START_HEIGHT;
+    public double getStartHeight() {
+        return startHeight;
     }
 
-    public void setSTART_HEIGHT(double START_HEIGHT) {
-        this.START_HEIGHT = START_HEIGHT;
+    public void setStartHeight(double startHeight) {
+        this.startHeight = startHeight;
     }
 
-    public double getFALL_SPEED() {
-        return FALL_SPEED;
+    public double getFallSpeed() {
+        return fallSpeed;
     }
 
-    public void setFALL_SPEED(double FALL_SPEED) {
-        this.FALL_SPEED = FALL_SPEED;
+    public void setFallSpeed(double fallSpeed) {
+        this.fallSpeed = fallSpeed;
     }
 
-    public double getEXPLOSION_RADIUS() {
-        return EXPLOSION_RADIUS;
+    public double getExplosionRadius() {
+        return explosionRadius;
     }
 
-    public void setEXPLOSION_RADIUS(double EXPLOSION_RADIUS) {
-        this.EXPLOSION_RADIUS = EXPLOSION_RADIUS;
+    public void setExplosionRadius(double explosionRadius) {
+        this.explosionRadius = explosionRadius;
     }
 
-    public float getEXPLOSION_POWER() {
-        return EXPLOSION_POWER;
+    public float getExplosionPower() {
+        return explosionPower;
     }
 
-    public void setEXPLOSION_POWER(float EXPLOSION_POWER) {
-        this.EXPLOSION_POWER = EXPLOSION_POWER;
+    public void setExplosionPower(float explosionPower) {
+        this.explosionPower = explosionPower;
     }
 
-    public double getMETEOR_BASE_DAMAGE() {
-        return METEOR_BASE_DAMAGE;
+    public double getMeteorBaseDamage() {
+        return meteorBaseDamage;
     }
 
-    public void setMETEOR_BASE_DAMAGE(double METEOR_BASE_DAMAGE) {
-        this.METEOR_BASE_DAMAGE = METEOR_BASE_DAMAGE;
+    public void setMeteorBaseDamage(double meteorBaseDamage) {
+        this.meteorBaseDamage = meteorBaseDamage;
     }
 
-    public int getGROUND_FLAME_COUNT() {
-        return GROUND_FLAME_COUNT;
+    public int getGroundFlameCount() {
+        return groundFlameCount;
     }
 
-    public void setGROUND_FLAME_COUNT(int GROUND_FLAME_COUNT) {
-        this.GROUND_FLAME_COUNT = GROUND_FLAME_COUNT;
+    public void setGroundFlameCount(int groundFlameCount) {
+        this.groundFlameCount = groundFlameCount;
     }
 
     public void setCooldown(Long cooldown) {

@@ -53,11 +53,11 @@ public class MeteorVisualInitialCastHandler implements VisualPipelineHandler {
         context.addAttribute(VisualSpellContextAttributes.TARGET, target);
         context.addAttribute(VisualSpellContextAttributes.PARTICLES, particles);
         context.addAttribute(VisualSpellContextAttributes.START_HEIGHT, 50.0);
-        context.addAttribute(VisualSpellContextAttributes.FALL_SPEED, meteorSpell.getFALL_SPEED());
-        context.addAttribute(VisualSpellContextAttributes.EXPLOSION_RADIUS, meteorSpell.getEXPLOSION_RADIUS());
-        context.addAttribute(VisualSpellContextAttributes.EXPLOSION_POWER, meteorSpell.getEXPLOSION_POWER());
+        context.addAttribute(VisualSpellContextAttributes.FALL_SPEED, meteorSpell.getFallSpeed());
+        context.addAttribute(VisualSpellContextAttributes.EXPLOSION_RADIUS, meteorSpell.getExplosionRadius());
+        context.addAttribute(VisualSpellContextAttributes.EXPLOSION_POWER, meteorSpell.getExplosionPower());
         context.addAttribute(VisualSpellContextAttributes.GROUND_FLAME_COUNT, 20);
-        context.addAttribute(VisualSpellContextAttributes.METEOR_BASE_DAMAGE, meteorSpell.getMETEOR_BASE_DAMAGE());
+        context.addAttribute(VisualSpellContextAttributes.METEOR_BASE_DAMAGE, meteorSpell.getMeteorBaseDamage());
     }
 
     @Override
