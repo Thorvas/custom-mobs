@@ -30,6 +30,8 @@ public class MeteorMetaCalculator implements IMetaCalculator {
         int xpForCurrentLevel = SpellExperienceUtil.experienceForLevel(level);
         int progress = meteorSpell.getExperience() - xpForCurrentLevel;
         int needed = SpellExperienceUtil.experienceToNextLevel(level);
+        double percent = (double) progress * 100 / needed;
+        String percentText = String.format("%.1f", percent); // jedna cyfra po przecinku
 
         return Component.text("\n> Szczegółowe informacje o zaklęciu <", NamedTextColor.GRAY)
                 .hoverEvent(HoverEvent.showText(
@@ -37,7 +39,7 @@ public class MeteorMetaCalculator implements IMetaCalculator {
                                 .append(Component.text("- Obrażenia: ", NamedTextColor.GRAY).append(Component.text(String.format("%.2f",meteorCalculateManager.calculateDamage(context) / 2.0) + " ❤\n", NamedTextColor.RED))
                                         .append(Component.text("- Czas odnowienia księgi: ", NamedTextColor.GRAY).append(Component.text( meteorSpell.getCooldown() / 1000 + " sekund(y) \n", NamedTextColor.RED))
                                         .append(Component.text("- Poziom zaklęcia: ", NamedTextColor.GRAY).append(Component.text("[" + meteorSpell.getLevel() + "]\n", NamedTextColor.GREEN))
-                                                .append(Component.text("- Doświadczenie zaklęcia: ", NamedTextColor.GRAY).append(Component.text("[" + progress + "/" + needed + "] " + "(x%)" + "\n", NamedTextColor.GREEN))
+                                                .append(Component.text("- Doświadczenie zaklęcia: ", NamedTextColor.GRAY).append(Component.text("[" + progress + "/" + needed + "] " + "("+percentText+"%)" + "\n", NamedTextColor.GREEN))
                                 .append(Component.text("- Zasięg eksplozji: ", NamedTextColor.GRAY ).append(Component.text( radius + " bloków\n", NamedTextColor.RED))
                 )))))));
     }
