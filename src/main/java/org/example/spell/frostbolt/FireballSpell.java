@@ -18,7 +18,7 @@ public class FireballSpell implements AreaSpell, InterruptibleSpell, Upgradeable
     float explosionPower = 1.0f;
     double baseDamage = 4.0;
 
-    private int experience = 5;
+    private int experience = 7;
 
     @Override
     public void cast(Player player) {

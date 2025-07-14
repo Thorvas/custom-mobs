@@ -7,6 +7,7 @@ import org.example.calculator.IMetaCalculator;
 import org.example.context.SpellContext;
 import org.example.context.SpellContextAttributes;
 import org.example.spell.Spell;
+import org.example.spell.UpgradeableSpell;
 import org.example.spell.frostbolt.FireballSpell;
 
 public class FireballMetaCalculator implements IMetaCalculator {
@@ -23,12 +24,14 @@ public class FireballMetaCalculator implements IMetaCalculator {
         Double radius = context.getAttr(SpellContextAttributes.EXPLOSION_RADIUS);
         Double range = context.getAttr(SpellContextAttributes.MAX_RANGE);
 
+        FireballSpell fireballSpell = (FireballSpell) context.getSpell();
+
         return Component.text("\n> Szczegółowe informacje o zaklęciu <", NamedTextColor.GRAY)
                 .hoverEvent(HoverEvent.showText(
                         Component.text("[Szczegółowe informacje parametrów zaklęcia]\n", NamedTextColor.GOLD)
                                 .append(Component.text("- Zasięg eksplozji: ", NamedTextColor.GRAY ).append(Component.text( radius + " bloków\n", NamedTextColor.RED))
-                                .append(Component.text("- Obrażenia: ", NamedTextColor.GRAY).append(Component.text(Math.floor((fireballCalculateManager.calculateDamage(context) / 2.0) * 2) / 2.0 + " ❤\n", NamedTextColor.RED))
-                                        .append(Component.text("- Poziom zaklęcia: ", NamedTextColor.GRAY).append(Component.text("[" + context.getSpell().getExperience() + "]\n", NamedTextColor.GREEN))
+                                .append(Component.text("- Obrażenia: ", NamedTextColor.GRAY).append(Component.text(String.format("%.2f", fireballCalculateManager.calculateDamage(context) / 2.0) + " ❤\n", NamedTextColor.RED))
+                                        .append(Component.text("- Poziom zaklęcia: ", NamedTextColor.GRAY).append(Component.text("[" + fireballSpell.getLevel() + "]\n", NamedTextColor.GREEN))
                                         .append(Component.text("- Zasięg rzucenia zaklęcia: ", NamedTextColor.GRAY).append(Component.text(range + " bloków\n", NamedTextColor.RED))
                                 ))))));
     }

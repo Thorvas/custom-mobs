@@ -11,7 +11,7 @@ import org.example.spell.UpgradeableSpell;
 
 public class MeteorSpell implements AreaSpell, InterruptibleSpell, UpgradeableSpell {
 
-    private int experience = 5;
+    private int experience = 7;
     private Component title;
     private final String id = "METEOR";
     private double START_HEIGHT = 50.0;      // ile bloków nad miejscem kliknięcia wyjdzie meteor
