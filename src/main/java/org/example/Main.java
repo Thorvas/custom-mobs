@@ -156,8 +156,12 @@ public class Main extends JavaPlugin implements Listener {
                 return true;
             }
 
+            int level;
+            int remaining;
             if (target instanceof org.example.spell.UpgradeableSpell up) {
                 up.addExperience(amount);
+                level = up.getLevel();
+                remaining = up.experienceToNextLevel();
             } else {
                 sender.sendMessage("Nie można ustawić doświadczenia tego zaklęcia.");
                 return true;
@@ -165,7 +169,8 @@ public class Main extends JavaPlugin implements Listener {
 
             ExperienceUtil.setTotalExperience(p, totalXp - amount);
             spellManager.saveSpellbookFor(p);
-            sender.sendMessage("Dodano " + amount + " XP do zaklęcia " + spellId + ".");
+            sender.sendMessage("Dodano " + amount + " XP do zaklęcia " + spellId +
+                    ". Poziom: " + level + " (do następnego potrzeba " + remaining + " XP).");
             return true;
         });
     }
