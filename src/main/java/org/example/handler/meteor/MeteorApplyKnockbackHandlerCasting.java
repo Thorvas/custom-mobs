@@ -27,7 +27,12 @@ public class MeteorApplyKnockbackHandlerCasting implements CastingPipelineHandle
         Vector sourceVec = impactLoc.toVector();
 
         // Wektor od CELU do ŹRÓDŁA (odwrotnie niż wcześniej)
-        Vector direction = sourceVec.subtract(targetVec).normalize();
+        Vector direction = sourceVec.subtract(targetVec);
+        // Avoid zero-length vectors which would cause an exception on normalize
+        if (direction.lengthSquared() == 0) {
+            return;
+        }
+        direction.normalize();
 
         double strength = context.getAttr(SpellContextAttributes.KNOCKBACK);
 
