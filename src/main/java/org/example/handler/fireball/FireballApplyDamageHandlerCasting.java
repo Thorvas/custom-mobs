@@ -1,5 +1,6 @@
 package org.example.handler.fireball;
 
+import org.example.calculator.fireball.FireballCalculateManager;
 import org.example.calculator.fireball.FireballDamageCalculator;
 import org.example.context.SpellContext;
 import org.example.context.SpellContextAttributes;
@@ -9,11 +10,11 @@ import org.example.spell.frostbolt.FireballSpell;
 
 public class FireballApplyDamageHandlerCasting implements CastingPipelineHandler {
 
-    public FireballApplyDamageHandlerCasting(FireballDamageCalculator fireballDamageCalculator) {
+    public FireballApplyDamageHandlerCasting(FireballCalculateManager fireballDamageCalculator) {
         this.fireballDamageCalculator = fireballDamageCalculator;
     }
 
-    private final FireballDamageCalculator fireballDamageCalculator;
+    private final FireballCalculateManager fireballDamageCalculator;
 
     @Override
     public void execute(SpellContext context) {

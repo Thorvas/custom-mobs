@@ -79,10 +79,10 @@ public class Main extends JavaPlugin implements Listener {
                 new PipelineExecutor(
                         List.of(new CheckCooldownStatusHandler(new CooldownManager()),
                                 new CheckStunnedStatusHandler()),
-                        List.of(new MeteorApplyDamageHandlerCasting(),
+                        List.of(new MeteorApplyDamageHandlerCasting(meteorCalculateManager),
                                 new MeteorApplyKnockbackHandlerCasting(),
                                 new FireballApplyKnockbackHandlerCasting(),
-                                new FireballApplyDamageHandlerCasting(fireballDamageCalculator))
+                                new FireballApplyDamageHandlerCasting(fireballCalculateManager))
                 ),
                 new VisualPipelineExecutor(
                         List.of(new MeteorVisualInitialCastHandler(),
