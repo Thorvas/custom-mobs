@@ -14,7 +14,7 @@ public class MeteorDamageCalculator implements IDamageCalculator {
     @Override
     public double calculateDamage(SpellContext context) {
         MeteorSpell meteorSpell = (MeteorSpell) context.getSpell();
-        int level = meteorSpell.getExperience();
+        int level = meteorSpell.getLevel();
 
         return (double) (5 * level) / (level + 15);
     }

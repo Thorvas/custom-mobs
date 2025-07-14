@@ -16,17 +16,19 @@ public class FireballDamageCalculatorTest {
         FireballSpell spell = new FireballSpell();
         FireballDamageCalculator calc = new FireballDamageCalculator();
 
-        // low experience
-        spell.setExperience(5);
+        // low total XP
+        spell.setExperience(10);
         SpellContext ctxLow = new SpellContext(spell, new SpellTarget(), new SpellCaster(), 0);
         double low = calc.calculateDamage(ctxLow);
-        double expectedLow = (5d * 5) / (5 + 15);
+        int lowLevel = org.example.util.SpellExperienceUtil.levelForExperience(10);
+        double expectedLow = (5d * lowLevel) / (lowLevel + 15);
 
-        // high experience
-        spell.setExperience(20);
+        // high total XP
+        spell.setExperience(50);
         SpellContext ctxHigh = new SpellContext(spell, new SpellTarget(), new SpellCaster(), 0);
         double high = calc.calculateDamage(ctxHigh);
-        double expectedHigh = (5d * 20) / (20 + 15);
+        int highLevel = org.example.util.SpellExperienceUtil.levelForExperience(50);
+        double expectedHigh = (5d * highLevel) / (highLevel + 15);
 
         assertTrue(high > low, "Damage should increase with experience");
         assertEquals(expectedLow, low);

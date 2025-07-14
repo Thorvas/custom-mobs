@@ -15,7 +15,7 @@ public class FireballDamageCalculator implements IDamageCalculator {
     @Override
     public double calculateDamage(SpellContext context) {
         FireballSpell fireballSpell = (FireballSpell) context.getSpell();
-        int level = fireballSpell.getExperience();
+        int level = fireballSpell.getLevel();
 
         return (double) (5 * level) / (level + 15);
     }
