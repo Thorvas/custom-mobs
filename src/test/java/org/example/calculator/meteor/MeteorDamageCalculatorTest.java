@@ -16,15 +16,17 @@ public class MeteorDamageCalculatorTest {
         MeteorSpell spell = new MeteorSpell();
         MeteorDamageCalculator calc = new MeteorDamageCalculator();
 
-        spell.setExperience(5);
+        spell.setExperience(15);
         SpellContext ctxLow = new SpellContext(spell, new SpellTarget(), new SpellCaster(), 0);
         double low = calc.calculateDamage(ctxLow);
-        double expectedLow = (5d * 5) / (5 + 15);
+        int lowLevel = org.example.util.SpellExperienceUtil.levelForExperience(15);
+        double expectedLow = (5d * lowLevel) / (lowLevel + 15);
 
-        spell.setExperience(30);
+        spell.setExperience(60);
         SpellContext ctxHigh = new SpellContext(spell, new SpellTarget(), new SpellCaster(), 0);
         double high = calc.calculateDamage(ctxHigh);
-        double expectedHigh = (5d * 30) / (30 + 15);
+        int highLevel = org.example.util.SpellExperienceUtil.levelForExperience(60);
+        double expectedHigh = (5d * highLevel) / (highLevel + 15);
 
         assertTrue(high > low, "Damage should increase with experience");
         assertEquals(expectedLow, low);
