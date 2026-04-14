@@ -5,11 +5,8 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.example.calculator.IMetaCalculator;
 import org.example.context.SpellContext;
-import org.example.context.SpellContextAttributes;
 import org.example.spell.Spell;
-import org.example.spell.frostbolt.FireballSpell;
 import org.example.spell.meteor.MeteorSpell;
-import org.example.util.ExperienceUtil;
 import org.example.util.SpellExperienceUtil;
 
 public class MeteorMetaCalculator implements IMetaCalculator {
@@ -22,7 +19,6 @@ public class MeteorMetaCalculator implements IMetaCalculator {
 
     @Override
     public Component getMeta(SpellContext context) {
-        Double radius = context.getAttr(SpellContextAttributes.EXPLOSION_RADIUS);
 
         MeteorSpell meteorSpell = (MeteorSpell) context.getSpell();
 
@@ -40,7 +36,7 @@ public class MeteorMetaCalculator implements IMetaCalculator {
                                         .append(Component.text("- Czas odnowienia księgi: ", NamedTextColor.GRAY).append(Component.text( meteorSpell.getCooldown() / 1000 + " sekund(y) \n", NamedTextColor.RED))
                                         .append(Component.text("- Poziom zaklęcia: ", NamedTextColor.GRAY).append(Component.text("[" + meteorSpell.getLevel() + "]\n", NamedTextColor.GREEN))
                                                 .append(Component.text("- Doświadczenie zaklęcia: ", NamedTextColor.GRAY).append(Component.text("[" + progress + "/" + needed + "] " + "("+percentText+"%)" + "\n", NamedTextColor.GREEN))
-                                .append(Component.text("- Zasięg eksplozji: ", NamedTextColor.GRAY ).append(Component.text( radius + " bloków\n", NamedTextColor.RED))
+                                .append(Component.text("- Zasięg eksplozji: ", NamedTextColor.GRAY ).append(Component.text(  "x bloków\n", NamedTextColor.RED))
                 )))))));
     }
 

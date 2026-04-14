@@ -35,7 +35,10 @@ public class SpellDescriptionFactory {
 
     public Component createSpellDescription(Spell spell, Player player) {
 
-        SpellContext context = new SpellContext(spell, new SpellTarget(), new SpellCaster(), 0);
+        SpellContext context = new SpellContext();
+
+        context.setSpell(spell);
+        context.setCaster(new SpellCaster());
 
         metaContextResolver.resolveContext(context, spell);
 
@@ -89,13 +92,12 @@ public class SpellDescriptionFactory {
     }
 
     private void checkLevelUp(UpgradeableSpell spell, int previousLevel, Player player) {
-            if (spell.getLevel() > previousLevel) {
-                int levelsGained = spell.getLevel() - previousLevel;
-                player.sendMessage("Gratulacje! Zdobyłeś " + levelsGained + " poziom(y) w zaklęciu " + spell.getName() + "!");
-                playLevelUpEffects(player, levelsGained);
-            }
+        if (spell.getLevel() > previousLevel) {
+            int levelsGained = spell.getLevel() - previousLevel;
+            player.sendMessage("Gratulacje! Zdobyłeś " + levelsGained + " poziom(y) w zaklęciu " + spell.getName() + "!");
+            playLevelUpEffects(player, levelsGained);
         }
-
+    }
 
 
     /**

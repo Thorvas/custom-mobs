@@ -3,7 +3,7 @@ package org.example.calculator.fireball;
 import org.example.calculator.ICalculateManager;
 import org.example.context.SpellContext;
 import org.example.spell.Spell;
-import org.example.spell.frostbolt.FireballSpell;
+import org.example.spell.fireball.FireballSpell;
 
 public class FireballCalculateManager implements ICalculateManager {
 

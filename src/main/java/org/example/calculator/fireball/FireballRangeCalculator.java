@@ -2,7 +2,7 @@ package org.example.calculator.fireball;
 
 import org.example.calculator.IRangeCalculator;
 import org.example.context.SpellContext;
-import org.example.spell.frostbolt.FireballSpell;
+import org.example.spell.fireball.FireballSpell;
 
 public class FireballRangeCalculator implements IRangeCalculator {
     @Override

@@ -6,31 +6,32 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.example.calculator.DamageCalculator;
 import org.example.context.PreCastSpellContext;
-import org.example.context.VisualSpellContext;
-import org.example.context.VisualSpellContextAttributes;
+import org.example.context.SpellContext;
 import org.example.entity.SpellCaster;
 import org.example.handler.PipelineExecutor;
-import org.example.handler.VisualPipelineExecutor;
-import org.example.spell.frostbolt.FireballSpell;
-import org.example.spell.meteor.MeteorSpell;
+import org.example.handler.SpellCastExecutor;
 import org.example.spell.Spell;
-import java.util.function.Supplier;
+import org.example.spell.fireball.FireballSpell;
+import org.example.spell.meteor.MeteorSpell;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Supplier;
 
 public class SpellManager {
 
     private final PipelineExecutor pipelineExecutor;
-    private final VisualPipelineExecutor visualPipelineExecutor;
+    private final SpellCastExecutor spellCastExecutor;
     private Map<UUID, Spellbook> spellbooks = new HashMap<>();
     private JavaPlugin plugin;
 
-    public SpellManager(PipelineExecutor pipelineExecutor, VisualPipelineExecutor visualPipelineExecutor, JavaPlugin plugin) {
+    public SpellManager(PipelineExecutor pipelineExecutor, SpellCastExecutor spellCastExecutor, JavaPlugin plugin) {
         this.plugin = plugin;
         this.pipelineExecutor = pipelineExecutor;
-        this.visualPipelineExecutor = visualPipelineExecutor;
+        this.spellCastExecutor = spellCastExecutor;
     }
 
     private static final Map<String, Supplier<Spell>> allSpells = Map.of(
@@ -58,7 +59,9 @@ public class SpellManager {
         return book;
     }
 
-    /** Zapisuje dane Spellbook w PDC (tylko gdy Player). */
+    /**
+     * Zapisuje dane Spellbook w PDC (tylko gdy Player).
+     */
     public void saveSpellbookFor(LivingEntity caster) {
         if (!(caster instanceof Player)) return;
         UUID id = caster.getUniqueId();
@@ -84,14 +87,18 @@ public class SpellManager {
     }
 
 
-    /** Ładuje wszystkie online PlayerSpellbooki do mapy. */
+    /**
+     * Ładuje wszystkie online PlayerSpellbooki do mapy.
+     */
     public void loadAllOnline() {
         for (Player p : Bukkit.getOnlinePlayers()) {
             loadSpellbookFor(p);
         }
     }
 
-    /** Zapisuje wszystkie spellbooki online. */
+    /**
+     * Zapisuje wszystkie spellbooki online.
+     */
     public void saveAllOnline() {
         for (Player p : Bukkit.getOnlinePlayers()) {
             saveSpellbookFor(p);
@@ -99,30 +106,35 @@ public class SpellManager {
     }
 
     public void castSpell(LivingEntity caster) {
+        Spell selectedSpell = loadSpellbookFor(caster).getSelectedSpell();
+        castSpell(caster, selectedSpell);
+    }
+
+    public void castSpell(LivingEntity caster, Spell spell) {
 
         SpellCaster spellCaster = new SpellCaster();
         spellCaster.setNegativeStatuses(Collections.emptyList());
         spellCaster.setPositiveStatuses(Collections.emptyList());
         spellCaster.setCaster(caster);
 
-        Spell selectedSpell = loadSpellbookFor(caster).getSelectedSpell();
+        Spell spellToCast = spell;
+        if (spellToCast == null) {
+            return;
+        }
 
         PreCastSpellContext preCastSpellContext = new PreCastSpellContext(
-                spellCaster, selectedSpell
+                spellCaster, spellToCast
         );
 
-        VisualSpellContext visualSpellContext = new VisualSpellContext();
-        visualSpellContext.setSpell(selectedSpell);
-        visualSpellContext.setCaster(spellCaster);
-        visualSpellContext.addAttribute(VisualSpellContextAttributes.PLUGIN, this.plugin);
-        visualSpellContext.addAttribute(VisualSpellContextAttributes.EXECUTOR, this.pipelineExecutor);
-        visualSpellContext.addAttribute(VisualSpellContextAttributes.DAMAGE_CALCULATOR, new DamageCalculator());
+        SpellContext spellContext = new SpellContext();
+        spellContext.setSpell(spellToCast);
+        spellContext.setCaster(spellCaster);
 
         if (!this.pipelineExecutor.handlePreCast(preCastSpellContext)) {
             return;
         }
 
-        visualPipelineExecutor.handleSpellRendering(visualSpellContext);
+        spellCastExecutor.handleSpellCast(spellContext);
 
     }
 }

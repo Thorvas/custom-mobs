@@ -1,12 +1,10 @@
 package org.example.handler.fireball;
 
 import org.example.calculator.fireball.FireballCalculateManager;
-import org.example.calculator.fireball.FireballDamageCalculator;
 import org.example.context.SpellContext;
-import org.example.context.SpellContextAttributes;
 import org.example.handler.CastingPipelineHandler;
 import org.example.spell.Spell;
-import org.example.spell.frostbolt.FireballSpell;
+import org.example.spell.fireball.FireballSpell;
 
 public class FireballApplyDamageHandlerCasting implements CastingPipelineHandler {
 

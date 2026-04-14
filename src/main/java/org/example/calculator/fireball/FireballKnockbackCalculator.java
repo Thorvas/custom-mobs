@@ -2,7 +2,7 @@ package org.example.calculator.fireball;
 
 import org.example.calculator.IKnockbackCalculator;
 import org.example.context.SpellContext;
-import org.example.spell.frostbolt.FireballSpell;
+import org.example.spell.fireball.FireballSpell;
 
 public class FireballKnockbackCalculator implements IKnockbackCalculator {
     @Override

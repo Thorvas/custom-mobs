@@ -4,40 +4,39 @@ import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 import org.example.context.SpellContext;
-import org.example.context.SpellContextAttributes;
 import org.example.handler.CastingPipelineHandler;
 import org.example.spell.Spell;
-import org.example.spell.frostbolt.FireballSpell;
+import org.example.spell.fireball.FireballSpell;
 
 public class FireballApplyKnockbackHandlerCasting implements CastingPipelineHandler {
 
     @Override
     public void execute(SpellContext context) {
-        LivingEntity target = context.getTarget().getTarget();
-        if (target == null) return;
-
-        // Źródło knockbacku — miejsce trafienia
-        Location impactLoc = context.getAttr(SpellContextAttributes.HIT_LOCATION);
-        if (impactLoc == null) {
-            impactLoc = target.getLocation();
-        }
-
-        // Pobierz wektory pozycji
-        Vector targetVec = target.getLocation().toVector();
-        Vector sourceVec = impactLoc.toVector();
-
-        // Wektor od CELU do ŹRÓDŁA (odwrotnie niż wcześniej)
-        Vector direction = sourceVec.subtract(targetVec);
-        // Avoid zero-length vectors which would cause an exception on normalize
-        if (direction.lengthSquared() == 0) {
-            return;
-        }
-        direction.normalize();
-
-        double strength = context.getAttr(SpellContextAttributes.KNOCKBACK);
-
-        // Teraz knockback będzie działał poprawnie
-        if (strength > 0) target.knockback(strength, direction.getX(), direction.getZ());
+//        LivingEntity target = context.getTarget().getTarget();
+//        if (target == null) return;
+//
+//        // Źródło knockbacku — miejsce trafienia
+//        Location impactLoc = context.getAttr(SpellContextAttributes.HIT_LOCATION);
+//        if (impactLoc == null) {
+//            impactLoc = target.getLocation();
+//        }
+//
+//        // Pobierz wektory pozycji
+//        Vector targetVec = target.getLocation().toVector();
+//        Vector sourceVec = impactLoc.toVector();
+//
+//        // Wektor od CELU do ŹRÓDŁA (odwrotnie niż wcześniej)
+//        Vector direction = sourceVec.subtract(targetVec);
+//        // Avoid zero-length vectors which would cause an exception on normalize
+//        if (direction.lengthSquared() == 0) {
+//            return;
+//        }
+//        direction.normalize();
+//
+//        double strength = context.getAttr(SpellContextAttributes.KNOCKBACK);
+//
+//        // Teraz knockback będzie działał poprawnie
+//        if (strength > 0) target.knockback(strength, direction.getX(), direction.getZ());
     }
 
     @Override

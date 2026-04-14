@@ -23,26 +23,29 @@ import org.example.calculator.meteor.MeteorDamageCalculator;
 import org.example.calculator.meteor.MeteorKnockbackCalculator;
 import org.example.calculator.meteor.MeteorMetaCalculator;
 import org.example.factory.SpellDescriptionFactory;
-import org.example.handler.CheckCooldownStatusHandler;
-import org.example.handler.CheckStunnedStatusHandler;
-import org.example.handler.PipelineExecutor;
-import org.example.handler.VisualPipelineExecutor;
+import org.example.handler.*;
 import org.example.handler.fireball.FireballApplyDamageHandlerCasting;
 import org.example.handler.fireball.FireballApplyKnockbackHandlerCasting;
-import org.example.handler.fireball.FireballVisualInitialCastHandler;
-import org.example.handler.fireball.FireballVisualLaunchHandler;
+import org.example.handler.fireball.FireballVfxHitHandler;
+import org.example.handler.fireball.FireballVfxMoveHandler;
 import org.example.handler.meteor.MeteorApplyDamageHandlerCasting;
 import org.example.handler.meteor.MeteorApplyKnockbackHandlerCasting;
-import org.example.handler.meteor.MeteorVisualInitialCastHandler;
-import org.example.handler.meteor.MeteorVisualLaunchMeteorHandler;
-import org.example.listener.ScrollSwitchSpellListener;
+import org.example.handler.meteor.MeteorVfxHitHandler;
+import org.example.handler.meteor.MeteorVfxMoveHandler;
+import org.example.listener.SpellHitListener;
+import org.example.listener.SpellMoveListener;
+import org.example.listener.SpellSequenceListener;
+import org.example.registry.MeteorProjectileSpellDefinition;
+import org.example.registry.ProjectileSpellDefinition;
+import org.example.registry.SpellRegistry;
 import org.example.spell.Spell;
 import org.example.spellbook.CooldownManager;
 import org.example.spellbook.SpellManager;
 import org.example.spellbook.Spellbook;
-import org.example.util.ExperienceUtil;
+import org.example.type.SpellType;
 
 import java.util.List;
+import java.util.Map;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -73,6 +76,22 @@ public class Main extends JavaPlugin implements Listener {
         );
         MetaExecutor metaExecutor = new MetaExecutor(metaCalculators);
 
+        ProjectileSpellDefinition fireballSpellDefinition = new ProjectileSpellDefinition();
+        MeteorProjectileSpellDefinition meteorProjectileSpellDefinition = new MeteorProjectileSpellDefinition();
+
+        SpellRegistry spellRegistry = new SpellRegistry(
+                Map.of(
+                        SpellType.FIREBALL, fireballSpellDefinition,
+                        SpellType.METEOR, meteorProjectileSpellDefinition
+                )
+        );
+
+        MeteorVfxHitHandler meteorVfxHitHandler = new MeteorVfxHitHandler(spellRegistry, this);
+        MeteorVfxMoveHandler meteorVfxMoveHandler = new MeteorVfxMoveHandler();
+
+        FireballVfxHitHandler fireballVfxHitHandler = new FireballVfxHitHandler(this, spellRegistry);
+        FireballVfxMoveHandler fireballVfxMoveHandler = new FireballVfxMoveHandler();
+
         // 1) Inicjalizujesz SpellManager
         this.spellManager = new SpellManager(
                 new PipelineExecutor(
@@ -83,21 +102,24 @@ public class Main extends JavaPlugin implements Listener {
                                 new FireballApplyKnockbackHandlerCasting(),
                                 new FireballApplyDamageHandlerCasting(fireballCalculateManager))
                 ),
-                new VisualPipelineExecutor(
-                        List.of(new MeteorVisualInitialCastHandler(),
-                                new MeteorVisualLaunchMeteorHandler(),
-                                new FireballVisualInitialCastHandler(),
-                                new FireballVisualLaunchHandler())
-                ),
-                this
-        );
+                new SpellCastExecutor(this, spellRegistry), this);
 
         this.spellDescriptionFactory = new SpellDescriptionFactory(metaExecutor, metaContextResolver, spellManager);
 
         // 2) Ładujesz wszystkich online graczy
         spellManager.loadAllOnline();
         getServer().getPluginManager().registerEvents(
-                new ScrollSwitchSpellListener(spellManager),
+                new SpellSequenceListener(spellManager),
+                this
+        );
+
+        getServer().getPluginManager().registerEvents(
+                new SpellHitListener(meteorVfxHitHandler, fireballVfxHitHandler),
+                this
+        );
+
+        getServer().getPluginManager().registerEvents(
+                new SpellMoveListener(fireballVfxMoveHandler, meteorVfxMoveHandler),
                 this
         );
 
@@ -129,24 +151,6 @@ public class Main extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         spellManager.saveSpellbookFor(e.getPlayer());
-    }
-
-    // ... Twoje onBookRightClick i onPlayerRightClick ...
-
-    // zamiast bezpośredniego tworzenia MeteorSpell robisz:
-    @EventHandler
-    public void onBookRightClick(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_AIR
-                && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        if (!event.getPlayer().isSneaking()) return;
-        ItemStack off = event.getPlayer().getInventory().getItemInOffHand();
-        if (off == null || off.getType() != Material.BOOK ||
-                off.getItemMeta() == null ||
-                !off.getItemMeta().hasItemName() ||
-                !off.getItemMeta().itemName().equals(Component.text("Ksiega zaklec"))) return;
-
-        // !! tutaj używasz SpellManager, nie tworysz nowej instancji ręcznie:
-        spellManager.castSpell(event.getPlayer());
     }
 
     @EventHandler
@@ -189,4 +193,3 @@ public class Main extends JavaPlugin implements Listener {
         player.openBook(display);
     }
 }
-
